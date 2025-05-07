@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2 class="text-center mb-4">My Tasks</h2>        
+    
+    <!-- Pending Tasks Section -->        
+
+    <h3 class="mt-4 mb-3">Pending Tasks</h3>
+    {% if all_tasks_completed %}
+    <div class="text-center my-4">
+        <a href="{% url 'add_task' %}" class="btn btn-primary btn-lg">
+            Add New Task
+        </a>
+    </div>
+    {% endif %}
+    <div class="row">
+        {% for task in tasks %}
+            {% if not task.is_completed %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm border-primary">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            {{ task.title|truncatechars:20 }}
+                            {% if task.title|length > 20 %}
+                                <a href="{% url 'task_details' task.id %}" class="text-white" style="text-decoration: none;">See more</a>
+                            {% endif %}
+                        </h5>
+                        
+                    </div>
+                
+                    <div class="card-body">
+                        <p class="card-text">{{ task.details|linebreaksbr }}</p>
+                        <hr>
+                        <div class="mb-3">
+                            <p class="mb-1"><strong>Due Date:</strong> {{ task.due_date }}</p>
+                            <p class="mb-1"><strong>Due Time:</strong> {{ task.due_time }}</p>
+                            {% if task.category.all %}
+                            <p class="mb-1"><strong>Categories:</strong> 
+                                {% for cat in task.category.all %}
+                                <span class="badge bg-secondary">{{ cat.name }}</span>
+                                {% endfor %}
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <form method="post" action="{% url 'complete_task' task.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="is_completed" value="True">
+                                <input type="radio" name="status" onchange="this.form.submit()">
+                                <label>Mark as Done</label>
+                            </form>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'edit_task' task.id %}" class="btn btn-primary btn-sm">
+                                    Edit
+                                </a>
+                                <a href="{% url 'delete_task' task.id %}" class="btn btn-danger btn-sm">
+                                    Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+        {% endfor %}
+    </div>
+    
+    <!-- Completed Tasks Section -->
+    <h3 class="mt-5 mb-3">Completed Tasks</h3>
+    <div class="row">
+        {% for task in tasks %}
+            {% if task.is_completed %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm border-secondary bg-light text-muted">
+                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            {{ task.title|truncatechars:9 }}
+                            {% if task.title|length > 9 %}
+                                <a href="{% url 'task_details' task.id %}" class="text-white ms-2" style="text-decoration: none;">
+                                    See more
+                                </a>
+                            {% endif %}
+                        </h5>
+                        
+                        <span class="badge bg-light text-dark">Completed</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ task.details|linebreaksbr }}</p>
+                        <hr>
+                        <div class="mb-3">
+                            <p class="mb-1"><strong>Deadline:</strong> {{ task.due_date }}</p>
+                            <p class="mb-1"><strong>Due Time:</strong> {{ task.due_time }}</p>
+                            {% if task.category.all %}
+                            <p class="mb-1"><strong>Categories:</strong> 
+                                {% for cat in task.category.all %}
+                                <span class="badge bg-secondary">{{ cat.name }}</span>
+                                {% endfor %}
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <form method="post" action="{% url 'complete_task' task.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="is_completed" value="False">
+                            <input type="checkbox" name="status" onchange="this.form.submit()" checked>
+                            <label>Completed</label>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        
+        
+        {% endfor %}
+        <!-- if not compleated -->
+        
+                {% if none_completed %}
+                <div class="col-12">
+                    <div class="alert alert-warning text-center">
+                        No tasks have been completed yet.
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- if not compleated -->
+{% endblock %}
