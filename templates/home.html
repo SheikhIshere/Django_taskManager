@@ -95,7 +95,14 @@
                         <span class="badge bg-light text-dark">Completed</span>
                     </div>
                     <div class="card-body">
-                        <p class="card-text">{{ task.details|linebreaksbr }}</p>
+                        <p class="card-text">
+                            {% with desc=task.details|striptags %}
+                                {{ desc|truncatechars:50 }}
+                                {% if desc|length > 50 %}
+                                    <a href="{% url 'task_details' task.id %}" class="text-black fw-bold" style="text-decoration: none;">See more</a>
+                                {% endif %}
+                            {% endwith %}
+                        </p>
                         <hr>
                         <div class="mb-3">
                             <p class="mb-1"><strong>Deadline:</strong> {{ task.due_date }}</p>

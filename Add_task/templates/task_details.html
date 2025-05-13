@@ -82,12 +82,14 @@
                 <div class="card-footer bg-light py-3">
                     <div class="d-flex justify-content-between">
                         <div class="d-grid gap-2">
-                            <a href="{% url 'edit_task' task.id %}" class="btn btn-outline-primary me-2">
-                                <i class="fas fa-edit me-1"></i> Edit Task
-                            </a>
-                            <a href="{% url 'delete_task' task.id %}" class="btn btn-outline-danger me-2">
-                                <i class="fas fa-trash-alt me-1"></i> Delete
-                            </a>
+                            {% if not task.is_completed %}
+                                <a href="{% url 'edit_task' task.id %}" class="btn btn-outline-primary me-2">
+                                    <i class="fas fa-edit me-1"></i> Edit Task
+                                </a>
+                                <a href="{% url 'delete_task' task.id %}" class="btn btn-outline-danger me-2">
+                                    <i class="fas fa-trash-alt me-1"></i> Delete
+                                </a>
+                            {% endif %}
                             <form method="post" action="{% url 'complete_task' task.id %}" class="d-inline">
                                 {% csrf_token %}
                                 <input type="hidden" name="is_completed" value="{{ task.is_completed|yesno:'False,True' }}">
